@@ -1,5 +1,8 @@
 var testShrimp;
 var myBackground;
+var menuBar;
+var score;
+var shrimpEaten = 0;
 const fishBody = [];
 var inverseFrames = 200;
 var toAdd = 0;
@@ -7,6 +10,7 @@ var startInd = 0;
 var head = "FishHeadRight.png";;
 var grid = [];
 var turn = false;
+
 for (var x = 0; x < 30; x++){
 	var temp = [];
 	for (var y = 0; y < 16; y++){
@@ -17,9 +21,11 @@ for (var x = 0; x < 30; x++){
 
 function startGame() {
   myGameArea.start();
-  testShrimp = new component(30,30, "#ff0000", 510,510, "nada");
-  myBackground = new component(1500,800,"Background.png",0,0,"image");
-  fishBody[0] = new component(50,50,"FishHeadRight.png",150,50,"image");
+  testShrimp = new component(30,30, "#ff0000", 510,510, "");
+  myBackground = new component(1500,800,"images/Background.png",0,0,"image");
+  menuBar = new component(1500,50,"#007a99",0,800,"");
+  score = new component("40px", "Consolas", "#ffffff",50,840, "text");
+  fishBody[0] = new component(50,50,"images/FishHeadRight.png",150,50,"image");
   drawBody(fishBody);
 }
 
@@ -27,7 +33,7 @@ var myGameArea = {
 	canvas : document.createElement("canvas"),
 	start : function() {
 		this.canvas.width = 1500;
-		this.canvas.height = 800;
+		this.canvas.height = 850;
 		this.ctxt = this.canvas.getContext("2d");
 		document.body.insertBefore(this.canvas, document.body.childNodes[0]);
 		this.interval = setInterval(updateGameArea, inverseFrames);
@@ -72,7 +78,11 @@ function component(width, height, color, x, y, type, orien){
 	this.y = y;
 	this.update = function(){
 		ctx = myGameArea.ctxt;
-		if (type == "image"){
+		if (type == "text"){
+			ctx.font = this.width + " " + this.height;
+			ctx.fillStyle = color;
+			ctx.fillText(this.text, this.x, this.y);
+		} else if(type == "image"){
 			ctx.drawImage(this.image,this.x,this.y,this.width,this.height);
 		} else {
 			ctx.fillStyle = color;
@@ -104,19 +114,11 @@ function component(width, height, color, x, y, type, orien){
 
 function updateBody(fish){
 	if (toAdd > 0){
-		/**if (fish.length == 1){
-			
-			if (fish[0].speedX == 0){
-				var temp = new component(50,50,"FishBodyVert.png",fish[0].x,fish[0].y,"image");
-			} else {
-				var temp = new component(50,50,"FishBodyHor.png",fish[0].x,fish[0].y,"image");
-			}
-		} else { **/
 		if (!turn){
 			if (fish[0].speedX == 0){
-				fish[0].image.src = "FishBodyVert.png";
+				fish[0].image.src = "images/FishBodyVert.png";
 			} else {
-				fish[0].image.src = "FishBodyHor.png";
+				fish[0].image.src = "images/FishBodyHor.png";
 			}
 		} else {
 			turn = false;
@@ -134,9 +136,9 @@ function updateBody(fish){
 		grid[fish[fish.length-1].x/50][fish[fish.length-1].y/50] = false;
 		if (!turn){
 			if (fish[0].speedX == 0){
-				fish[0].image.src = "FishBodyVert.png";
+				fish[0].image.src = "images/FishBodyVert.png";
 			} else {
-				fish[0].image.src = "FishBodyHor.png";
+				fish[0].image.src = "images/FishBodyHor.png";
 			}
 		} else {
 			turn = false;
@@ -168,66 +170,56 @@ function updateGameArea(){
 			myGameArea.createShrimp();
 			myBackground.update();
 			toAdd += 3;
+			shrimpEaten++;
 		}
 		if (myGameArea.keys.length > startInd){
-			/**
-			if (startInd == 0){
-				if (myGameArea.keys[startInd] == 37) {
-					fishBody[0].image.src = "FishHeadLeft.png";
-					fishBody[0].speedX = -50;
-					fishBody[0].speedY = 0;
-				}
-				else if (myGameArea.keys[startInd] == 39) {fishBody[0].image.src = "FishHeadRight.png"; fishBody[0].speedX = 50; fishBody[0].speedY = 0;}
-				else if (myGameArea.keys[startInd] == 38) {fishBody[0].image.src = "FishHeadUp.png"; fishBody[0].speedY = -50; fishBody[0].speedX = 0;}
-				else {fishBody[0].image.src = "FishHeadDown.png"; fishBody[0].speedY = 50; fishBody[0].speedX = 0;}
-				startInd ++;
-			}
-			else { **/
 			if (myGameArea.keys[startInd] == 37) {
-				//fishBody[0].image.src = "FishHeadLeft.png";
 				turn = true;
-				head = "FishHeadLeft.png";
+				head = "images/FishHeadLeft.png";
 				fishBody[0].speedX = -50;
 				fishBody[0].speedY = 0;
 				if (fishBody.length > 1 && myGameArea.keys[startInd-1] == 38){
-					fishBody[0].image.src = "BottomLeft.png";
+					fishBody[0].image.src = "images/BottomLeft.png";
 				} else {
-					fishBody[0].image.src = "UpperLeft.png";
+					fishBody[0].image.src = "images/UpperLeft.png";
 				}
 			} else if (myGameArea.keys[startInd] == 39) {
 				turn = true;
-				head = "FishHeadRight.png";
+				head = "images/FishHeadRight.png";
 				fishBody[0].speedX = 50;
 				fishBody[0].speedY = 0;
 				if (fishBody.length > 1 && myGameArea.keys[startInd-1] == 38){
-					fishBody[0].image.src = "BottomRight.png";
+					fishBody[0].image.src = "images/BottomRight.png";
 				} else {
-					fishBody[0].image.src = "UpperRight.png";
+					fishBody[0].image.src = "images/UpperRight.png";
 				}
 			} else if (myGameArea.keys[startInd] == 38){
 				turn = true;
-				head = "FishHeadUp.png";
+				head = "images/FishHeadUp.png";
 				fishBody[0].speedY = -50;
 				fishBody[0].speedX = 0;
 				if (fishBody.length > 1 && myGameArea.keys[startInd-1] == 37){
-					fishBody[0].image.src = "UpperRight.png";
+					fishBody[0].image.src = "images/UpperRight.png";
 				} else {
-					fishBody[0].image.src = "UpperLeft.png";
+					fishBody[0].image.src = "images/UpperLeft.png";
 				}
 			} else {
 				turn = true;
-				head = "FishHeadDown.png";
+				head = "images/FishHeadDown.png";
 				fishBody[0].speedY = 50;
 				fishBody[0].speedX = 0;
 				if (fishBody.length > 1 && myGameArea.keys[startInd-1] == 37){
-					fishBody[0].image.src = "BottomRight.png";
+					fishBody[0].image.src = "images/BottomRight.png";
 				} else {
-					fishBody[0].image.src = "BottomLeft.png";
+					fishBody[0].image.src = "images/BottomLeft.png";
 				}
 			}
 			startInd ++;
 		}
 		myBackground.update();
+		menuBar.update();
+		score.text = "Score: " + shrimpEaten;
+		score.update();
 		updateBody(fishBody);
 		//console.info(fishBody[0].x, fishBody[0].y);
 		fishBody[0].newPos();
